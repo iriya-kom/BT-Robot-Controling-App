@@ -1,51 +1,60 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:manipulator_controller/presentation/utils/enum/bt_connection_status.dart';
 
 abstract class BtService {
-  Future<void> connect();
 
-  void sendData(String data);
+  Future<BtConnectionStatus> connect();
+
+  Future<void> sendData(String data);
 }
 
 class BtServiceImpl extends BtService {
-  late BluetoothConnection connection;
+  BluetoothConnection? connection;
 
   BtServiceImpl();
 
   @override
-  Future<void> connect() async {
-    BluetoothDevice device = await FlutterBluetoothSerial.instance
-        .getBondedDevices()
-        .then((List<BluetoothDevice> bondedDevices) {
-      return bondedDevices.firstWhere((device) => device.name == "HC-05");
-    });
+  Future<BtConnectionStatus> connect() async {
+    try{
+      BluetoothDevice device = await FlutterBluetoothSerial.instance
+          .getBondedDevices()
+          .then((List<BluetoothDevice> bondedDevices) {
+        return bondedDevices.firstWhere((device) => device.name == "HC-05");
+      });
 
-    if (device != null) {
       try {
         connection = await BluetoothConnection.toAddress(device.address);
         if (kDebugMode) {
           print('+++++Successful $connection +++++');
+          return BtConnectionStatus.connected;
         }
       } catch (ex) {
         if (kDebugMode) {
           print("Error connecting: $ex");
+          return BtConnectionStatus.error;
         }
       }
-    } else {
+    } catch (e){
       if (kDebugMode) {
         print("Device not found");
       }
+      return BtConnectionStatus.error;
     }
+    return BtConnectionStatus.error;
   }
 
   @override
-  void sendData(String data) async {
-    connection.output.add(
-      Uint8List.fromList(
-        ("$data\n").codeUnits,
-      ),
-    );
-    await connection.output.allSent;
+  Future<void> sendData(String data) async {
+    print(data);
+    if (connection != null) {
+      connection?.output.add(
+        Uint8List.fromList(
+          ("$data\n").codeUnits,
+        ),
+      );
+      connection?.output.allSent;
+    }
   }
 }
