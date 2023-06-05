@@ -51,8 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     state.status == BtConnectionStatus.connecting
-                        ? Row(
-                            children: const [
+                        ? const Row(
+                            children: [
                               SizedBox(
                                 height: 22,
                                 width: 22,
