@@ -51,8 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     state.status == BtConnectionStatus.connecting
-                        ? Row(
-                            children: const [
+                        ? const Row(
+                            children: [
                               SizedBox(
                                 height: 22,
                                 width: 22,
@@ -222,7 +222,7 @@ class SliderBlock extends StatelessWidget {
             value: currentValue.toDouble(),
             min: 0,
             max: 180,
-            divisions: 36,
+            divisions: 25,
             label: '$currentValue',
             onChanged: (value) {
               onChange(value);

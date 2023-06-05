@@ -55,6 +55,7 @@ class BtServiceImpl extends BtService {
         ),
       );
       connection?.output.allSent;
+      print('sent');
     }
   }
 }
